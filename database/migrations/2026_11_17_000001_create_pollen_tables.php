@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Pollen: the tables Pollen keeps its channels, shares and plans in.
+ * Pollen: the tables for channels, shares and the items Pollen heard of.
  *
  * @package KraftySprouts\Pollen
  * @since   1.0.0
@@ -68,19 +68,6 @@ return new class extends Migration
             $table->index(['channel_id', 'sent_at']);
         });
 
-        Schema::create('pollen_automations', function (Blueprint $table): void {
-            $table->string('id', 26)->primary();
-            $table->string('name', 80);
-            $table->string('kind', 16);
-            $table->boolean('active')->default(true);
-            $table->jsonb('settings')->default('{}');
-            $table->timestampTz('next_run_at')->nullable();
-            $table->unsignedInteger('turn')->default(0);
-            $table->string('created_by', 32)->default('');
-            $table->string('last_note', 500)->default('');
-            $table->timestampsTz();
-        });
-
         Schema::create('pollen_items', function (Blueprint $table): void {
             $table->string('item_id', 26)->primary();
             $table->boolean('opted_out')->default(false);
@@ -93,38 +80,6 @@ return new class extends Migration
             $table->timestampTz('last_shared_at')->nullable();
             $table->string('panel_note', 200)->default('');
             $table->timestampsTz();
-        });
-
-        Schema::create('pollen_images', function (Blueprint $table): void {
-            $table->string('key', 40)->primary();
-            $table->string('source', 2048);
-            $table->string('network', 32);
-            $table->string('mime', 32);
-            $table->longText('bytes');
-            $table->unsignedInteger('width');
-            $table->unsignedInteger('height');
-            $table->timestampTz('created_at');
-        });
-
-        Schema::create('pollen_connects', function (Blueprint $table): void {
-            $table->string('state', 64)->primary();
-            $table->string('channel_id', 26);
-            $table->string('verifier', 128)->default('');
-            $table->string('started_by', 32)->default('');
-            $table->timestampTz('expires_at');
-        });
-
-        Schema::create('pollen_people', function (Blueprint $table): void {
-            $table->string('person_id', 32)->primary();
-            $table->jsonb('permissions')->default('[]');
-            $table->string('zone', 64)->default('');
-            $table->timestampTz('seen_at');
-        });
-
-        Schema::create('pollen_requests', function (Blueprint $table): void {
-            $table->string('key', 120)->primary();
-            $table->string('plugin', 120)->default('');
-            $table->timestampTz('created_at');
         });
     }
 };

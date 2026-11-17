@@ -12,7 +12,7 @@ uses(TemeTestCase::class);
 it('is enabled by an administrator, with every table it lists', function (): void {
     $this->plugin(__DIR__.'/../..')->enable();
 
-    foreach (['pollen_channels', 'pollen_shares', 'pollen_automations', 'pollen_items', 'pollen_images', 'pollen_connects', 'pollen_people', 'pollen_requests'] as $table) {
+    foreach (['pollen_channels', 'pollen_shares', 'pollen_items'] as $table) {
         expect(DB::getSchemaBuilder()->hasTable($table))->toBeTrue();
     }
 });

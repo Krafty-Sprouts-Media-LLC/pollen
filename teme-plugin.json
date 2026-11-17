@@ -3,293 +3,41 @@
     "name": "krafty-sprouts/pollen",
     "code": "pollen",
     "label": "Pollen",
-    "description": "Shares your content to social networks when it is published, on a plan you set, and by re-sharing older items. It sends only to the networks you connect, and tracks no readers.",
+    "description": "Shares your content to social networks when it is published. It sends only to the channels you connect, and tracks no readers.",
     "version": "1.0.0",
     "requires": {
         "teme": "^1.0"
     },
     "plugin": "KraftySprouts\\Pollen\\Pollen",
-    "capabilities": ["content.read", "http", "jobs", "routes.public", "ai", "people.read", "notices.send", "import.wordpress"],
+    "capabilities": ["content.read", "http", "jobs"],
     "hooks": ["ContentPublished", "ContentUnpublished", "ContentTrashed", "ContentDeleted"],
-    "hosts": [
-        "graph.facebook.com",
-        "api.x.com",
-        "api.linkedin.com",
-        "www.linkedin.com",
-        "api.pinterest.com",
-        "api.telegram.org",
-        "bsky.social",
-        "graph.threads.net",
-        "www.reddit.com",
-        "oauth.reddit.com",
-        "discord.com",
-        "oauth2.googleapis.com",
-        "mybusiness.googleapis.com",
-        "mybusinessaccountmanagement.googleapis.com",
-        "mybusinessbusinessinformation.googleapis.com",
-        "www.googleapis.com",
-        "api.tumblr.com",
-        "api.vk.com",
-        "www.plurk.com"
-    ],
-    "hostsFrom": ["servers", "image_host", "watermark_image"],
+    "hosts": ["api.telegram.org"],
     "jobs": [
         {"key": "dispatch", "label": "Pollen: send what is due", "tries": 1},
-        {"key": "send-share", "label": "Pollen: share to a network", "tries": 3, "backoff": [60, 300, 900]},
-        {"key": "tidy", "label": "Pollen: refresh sign-ins and tidy up", "tries": 2},
-        {"key": "check-channels", "label": "Pollen: check every channel", "tries": 1},
-        {"key": "panel-share", "label": "Pollen: plan shares for this item", "tries": 1},
-        {"key": "panel-captions", "label": "Pollen: suggest captions", "tries": 1},
-        {"key": "panel-switch", "label": "Pollen: switch sharing for this item", "tries": 1}
+        {"key": "send-share", "label": "Pollen: share to a network", "tries": 3, "backoff": [60, 300, 900]}
     ],
     "schedules": [
-        {"job": "dispatch", "every": "minute"},
-        {"job": "tidy", "every": "day"}
+        {"job": "dispatch", "every": "minute"}
     ],
-    "routes": [
-        {"id": "connect", "method": "GET", "path": "/{code}/connect/{key}", "handler": "KraftySprouts\\Pollen\\Routes\\ConnectRoute", "where": {"key": "[A-Za-z0-9]{40}"}, "throttle": 30},
-        {"id": "callback", "method": "GET", "path": "/{code}/callback", "handler": "KraftySprouts\\Pollen\\Routes\\CallbackRoute", "throttle": 30},
-        {"id": "image", "method": "GET", "path": "/{code}/image/{key}", "handler": "KraftySprouts\\Pollen\\Routes\\ImageRoute", "where": {"key": "[a-z0-9]{40}\\.(jpg|png)"}, "cache": {"lifetime": 60}, "throttle": 240}
-    ],
-    "imports": {
-        "importer": "KraftySprouts\\Pollen\\Import\\WordPressImport",
-        "options": [
-            "rop_data", "rop_schedules_data", "top_opt_post_formats", "top_opt_excluded_post",
-            "fsp_auto_share", "fsp_auto_share_delay", "fsp_allowed_post_types",
-            "fsp_fb_post_text", "fsp_fb_first_comment_text", "fsp_instagram_post_content", "fsp_instagram_first_comment_text",
-            "fsp_twitter_post_content", "fsp_twitter_first_comment_text", "fsp_linkedin_post_content", "fsp_pinterest_post_content",
-            "fsp_telegram_post_content", "fsp_bluesky_post_content", "fsp_bluesky_first_comment_text", "fsp_threads_post_content",
-            "fsp_mastodon_post_content", "fsp_reddit_post_content", "fsp_reddit_first_comment_text", "fsp_discord_post_content",
-            "fsp_google_b_post_content", "fsp_tumblr_post_content", "fsp_vk_post_content", "fsp_plurk_post_content",
-            "fsp_blogger_post_content", "fsp_wordpress_post_content"
-        ]
-    },
     "owns": {
-        "tables": ["pollen_channels", "pollen_shares", "pollen_automations", "pollen_items", "pollen_images", "pollen_connects", "pollen_people", "pollen_requests"]
+        "tables": ["pollen_channels", "pollen_shares", "pollen_items"]
     },
     "contributes": {
         "settingsSections": [
             {"id": "start", "label": "Getting started", "description": "Pollen keeps each channel's sign-in sealed with this key. Set it once, before you connect any channel."},
-            {"id": "apps", "label": "Your apps on the networks", "description": "The networks that need an app of your own give you these keys when you make one. Pollen's README says where."},
-            {"id": "sharing", "label": "Sharing", "description": "How shares are written, timed and tagged."},
-            {"id": "images", "label": "Images", "description": "Which image goes with a share, and how Pollen prepares copies of it."},
-            {"id": "servers", "label": "Servers you choose", "description": "Mastodon servers, Bluesky servers and WordPress sites your channels post to."},
-            {"id": "help", "label": "AI and notices", "description": "Captions from your site's AI connection, and when to tell people about problems."}
+            {"id": "sharing", "label": "Sharing", "description": "How shares are written, timed and tagged."}
         ],
         "settings": [
             {"key": "lock_key", "type": "secret", "section": "start", "label": "Lock key", "description": "A long phrase, at least 24 characters, that seals channel sign-ins. Changing it later means connecting every channel again."},
-            {"key": "facebook_app_id", "type": "text", "section": "apps", "label": "Meta app ID", "description": "For Facebook Pages and Instagram: the App ID of your app at developers.facebook.com."},
-            {"key": "facebook_app_secret", "type": "secret", "section": "apps", "label": "Meta app secret", "description": "That app's App Secret."},
-            {"key": "threads_app_id", "type": "text", "section": "apps", "label": "Threads app ID", "description": "The Threads App ID shown under your Meta app's Threads use case."},
-            {"key": "threads_app_secret", "type": "secret", "section": "apps", "label": "Threads app secret", "description": "The Threads App Secret."},
-            {"key": "x_client_id", "type": "text", "section": "apps", "label": "X client ID", "description": "The OAuth 2.0 Client ID of your app at developer.x.com."},
-            {"key": "x_client_secret", "type": "secret", "section": "apps", "label": "X client secret", "description": "That app's OAuth 2.0 Client Secret."},
-            {"key": "linkedin_client_id", "type": "text", "section": "apps", "label": "LinkedIn client ID", "description": "The Client ID of your app at linkedin.com/developers."},
-            {"key": "linkedin_client_secret", "type": "secret", "section": "apps", "label": "LinkedIn client secret", "description": "That app's Primary Client Secret."},
-            {"key": "pinterest_app_id", "type": "text", "section": "apps", "label": "Pinterest app ID", "description": "The App ID of your app at developers.pinterest.com."},
-            {"key": "pinterest_app_secret", "type": "secret", "section": "apps", "label": "Pinterest app secret", "description": "That app's secret key."},
-            {"key": "reddit_client_id", "type": "text", "section": "apps", "label": "Reddit client ID", "description": "The ID under your web app at reddit.com/prefs/apps."},
-            {"key": "reddit_client_secret", "type": "secret", "section": "apps", "label": "Reddit client secret", "description": "That app's secret."},
-            {"key": "google_client_id", "type": "text", "section": "apps", "label": "Google client ID", "description": "For Google Business Profile and Blogger: an OAuth client ID from console.cloud.google.com."},
-            {"key": "google_client_secret", "type": "secret", "section": "apps", "label": "Google client secret", "description": "That OAuth client's secret."},
-            {"key": "tumblr_client_id", "type": "text", "section": "apps", "label": "Tumblr consumer key", "description": "The OAuth consumer key of your app at tumblr.com/oauth/apps."},
-            {"key": "tumblr_client_secret", "type": "secret", "section": "apps", "label": "Tumblr secret key", "description": "That app's secret key."},
-            {"key": "plurk_app_key", "type": "text", "section": "apps", "label": "Plurk app key", "description": "The App Key of your app at plurk.com/PlurkApp."},
-            {"key": "plurk_app_secret", "type": "secret", "section": "apps", "label": "Plurk app secret", "description": "That app's App Secret."},
-            {"key": "template", "type": "textarea", "section": "sharing", "label": "Share text", "description": "What a share says unless a network, a channel or the writer says otherwise. Use {title}, {excerpt}, {content}, {link}, {author}, {hashtags}, {categories}, {tags}, {site} and {type}.", "default": "{title}\n\n{excerpt}\n\n{link}\n\n{hashtags}", "maxLength": 2000},
-            {"key": "templates", "type": "repeater", "section": "sharing", "label": "Text for each network", "description": "Write differently for a network. A network not listed uses the share text above.", "itemLabel": "network", "itemTitle": "network", "maxItems": 20, "fields": [
-                {"key": "network", "type": "select", "label": "Network", "description": "The network this text is for.", "required": true, "options": {"facebook": "Facebook Pages", "instagram": "Instagram", "x": "X", "linkedin": "LinkedIn", "pinterest": "Pinterest", "telegram": "Telegram", "bluesky": "Bluesky", "threads": "Threads", "mastodon": "Mastodon", "reddit": "Reddit", "discord": "Discord", "google-business": "Google Business Profile", "tumblr": "Tumblr", "vk": "VK", "plurk": "Plurk", "blogger": "Blogger", "wordpress": "WordPress"}},
-                {"key": "text", "type": "textarea", "label": "Text", "description": "The template for this network.", "maxLength": 2000},
-                {"key": "first_comment", "type": "textarea", "label": "First comment", "description": "Posted under the share where the network allows it, such as {link} on Instagram.", "maxLength": 1000},
-                {"key": "hashtags", "type": "number", "label": "Most hashtags", "description": "How many of the item's terms become hashtags here.", "min": 0, "max": 30}
-            ]},
+            {"key": "template", "type": "textarea", "section": "sharing", "label": "Share text", "description": "What a share says. Use {title}, {excerpt}, {content}, {link}, {author}, {hashtags}, {categories}, {tags}, {site} and {type}.", "default": "{title}\n\n{excerpt}\n\n{link}\n\n{hashtags}", "maxLength": 2000},
             {"key": "hashtags", "type": "number", "section": "sharing", "label": "Most hashtags", "description": "How many of an item's categories and tags become hashtags.", "default": 3, "min": 0, "max": 30},
             {"key": "delay", "type": "number", "section": "sharing", "label": "Wait after publishing", "description": "Minutes Pollen waits after an item is published before sharing it, so a quick fix makes it in.", "default": 2, "min": 0, "max": 60, "unit": "minutes"},
             {"key": "utm", "type": "boolean", "section": "sharing", "label": "Tag shared links", "description": "Add utm_source, utm_medium and utm_campaign to each shared link, so your own statistics can tell where readers came from.", "default": true},
             {"key": "utm_source", "type": "text", "section": "sharing", "label": "utm_source", "description": "Use {network} and {channel}.", "default": "{network}", "visibleWhen": {"utm": true}},
             {"key": "utm_medium", "type": "text", "section": "sharing", "label": "utm_medium", "description": "Use {network} and {channel}.", "default": "social", "visibleWhen": {"utm": true}},
             {"key": "utm_campaign", "type": "text", "section": "sharing", "label": "utm_campaign", "description": "Use {slug}, {id}, {type} and {network}.", "default": "pollen", "visibleWhen": {"utm": true}},
-            {"key": "pause", "type": "boolean", "section": "sharing", "label": "Pause all sharing", "description": "While on, nothing is sent; shares wait and go when it is off again.", "default": false},
-            {"key": "image_source", "type": "select", "section": "images", "label": "Image for a share", "description": "Teme doesn't yet tell plugins an item's featured image, so Pollen uses the first image in the article, unless the writer chose one.", "default": "article", "options": {"article": "The writer's choice, else the article's first image", "chosen": "Only an image the writer chose", "none": "No image"}},
-            {"key": "image_host", "type": "url", "section": "images", "label": "Where your images are", "description": "The address your site's images are served from, such as https://media.example.com. Pollen fetches images only from here to prepare copies.", "example": "https://media.example.com"},
-            {"key": "resize", "type": "boolean", "section": "images", "label": "Prepare copies for each network", "description": "Resize and crop a copy of the image to each network's best size. The original is never changed.", "default": true},
-            {"key": "watermark", "type": "boolean", "section": "images", "label": "Add a watermark", "description": "Place your logo in a corner of each copy.", "default": false},
-            {"key": "watermark_image", "type": "url", "section": "images", "label": "Logo address", "description": "The address of a PNG of your logo.", "visibleWhen": {"watermark": true}},
-            {"key": "watermark_corner", "type": "select", "section": "images", "label": "Corner", "description": "Where the logo sits.", "default": "bottom-right", "options": {"bottom-right": "Bottom right", "bottom-left": "Bottom left", "top-right": "Top right", "top-left": "Top left"}, "visibleWhen": {"watermark": true}},
-            {"key": "watermark_size", "type": "number", "section": "images", "label": "Logo width", "description": "The logo's width as a share of the image's.", "default": 18, "min": 5, "max": 40, "unit": "%", "visibleWhen": {"watermark": true}},
-            {"key": "servers", "type": "urls", "section": "servers", "label": "Servers", "description": "One address a line: each Mastodon server, Bluesky server other than bsky.social, and WordPress site a channel posts to.", "example": "https://mastodon.social"},
-            {"key": "ai_captions", "type": "boolean", "section": "help", "label": "Offer AI captions", "description": "Let writers ask your site's AI connection for share text. Nothing is posted until a person chooses it, unless an automation says so.", "default": true},
-            {"key": "ai_voice", "type": "select", "section": "help", "label": "Caption voice", "description": "How AI captions sound.", "default": "friendly", "options": {"friendly": "Friendly", "plain": "Plain and factual", "playful": "Playful", "formal": "Formal"}, "visibleWhen": {"ai_captions": true}},
-            {"key": "failure_limit", "type": "number", "section": "help", "label": "Tell managers after", "description": "Failed shares in a row on one channel before the people who manage Pollen are told.", "default": 3, "min": 1, "max": 20, "unit": "failures"}
-        ],
-        "actions": [
-            {"id": "check-channels", "label": "Check every channel", "description": "Asks each network whether its channel's sign-in still works.", "job": "check-channels"}
-        ],
-        "permissions": [
-            {"id": "share", "label": "Share with Pollen", "description": "Share items to the channels they may use, plan shares and see their own.", "roles": ["editor", "author"]},
-            {"id": "manage", "label": "Manage Pollen", "description": "Connect channels, write automations, see every share and Pollen's reports.", "roles": ["editor"]}
-        ],
-        "notices": [
-            {"id": "reconnect", "label": "Email me when a Pollen channel must be connected again", "audience": "manage", "channels": ["mail", "inbox"], "defaults": ["mail", "inbox"]},
-            {"id": "failing", "label": "Email me when a Pollen channel keeps failing", "audience": "manage", "channels": ["mail", "inbox"], "defaults": ["mail", "inbox"]},
-            {"id": "my_share_failed", "label": "Tell me when a share I planned fails", "audience": "starter", "channels": ["mail", "inbox"], "defaults": ["inbox"]}
-        ],
-        "aiTasks": [
-            {"id": "caption", "label": "Pollen share captions", "description": "Writes share text for each network from an item's title and words.", "needs": ["text", "structured-output"], "sends": "draft", "maxOutputTokens": 2000}
-        ],
-        "hooks": [
-            {"name": "ShareRequests", "class": "KraftySprouts\\Pollen\\Hooks\\ShareRequests", "description": "Asked each minute for items other plugins want Pollen to share."},
-            {"name": "ShareText", "class": "KraftySprouts\\Pollen\\Hooks\\ShareText", "description": "Lets other plugins change a share's text before it is sent."},
-            {"name": "ShareSent", "class": "KraftySprouts\\Pollen\\Hooks\\ShareSent", "description": "Tells other plugins a share was sent or failed for good."}
-        ],
-        "editorPanels": [
-            {"id": "share", "label": "Pollen", "description": "Share this item to your channels, now or later.", "icon": "send", "types": ["post", "page"], "permission": "share", "actions": [
-                {"id": "share", "label": "Plan shares", "job": "panel-share", "fields": [
-                    {"key": "channels", "type": "text", "label": "Channels", "maxLength": 500, "default": ""},
-                    {"key": "message", "type": "textarea", "label": "Your words (optional)", "maxLength": 2000, "default": ""},
-                    {"key": "when", "type": "text", "label": "When (such as 2026-12-01 09:30)", "maxLength": 40, "default": ""},
-                    {"key": "image", "type": "text", "label": "Image address (optional)", "maxLength": 500, "default": ""}
-                ]},
-                {"id": "captions", "label": "Suggest captions", "job": "panel-captions", "fields": [
-                    {"key": "channels", "type": "text", "label": "Channels", "maxLength": 500, "default": ""},
-                    {"key": "brief", "type": "textarea", "label": "What to stress", "maxLength": 1000, "default": ""}
-                ]},
-                {"id": "switch", "label": "Sharing on or off", "job": "panel-switch", "fields": [
-                    {"key": "sharing", "type": "select", "label": "This item", "required": true, "default": "on", "options": {"on": "Share it as usual", "off": "Never share it"}}
-                ]}
-            ]}
-        ],
-        "area": {
-            "label": "Shares",
-            "description": "Your channels, planned and sent shares, and the automations that share for you.",
-            "permission": "share",
-            "menu": "content",
-            "pages": [
-                {"id": "overview", "label": "Overview", "blocks": [
-                    {"id": "totals", "type": "figures", "items": [
-                        {"id": "sent", "label": "Sent, last 30 days", "format": "number"},
-                        {"id": "failed", "label": "Failed, last 30 days", "format": "number"},
-                        {"id": "waiting", "label": "Waiting to go", "format": "number"},
-                        {"id": "attention", "label": "Channels needing you", "format": "number"}
-                    ]},
-                    {"id": "daily", "type": "chart", "label": "Shares a day, last 30 days", "kind": "line", "series": [
-                        {"id": "sent", "label": "Sent"},
-                        {"id": "failed", "label": "Failed"}
-                    ]},
-                    {"id": "check", "type": "actions", "actions": ["check-channels"]}
-                ]},
-                {"id": "planner", "label": "Planner", "blocks": [
-                    {"id": "ahead", "type": "chart", "label": "Shares planned, next 30 days", "kind": "bar", "series": [
-                        {"id": "planned", "label": "Planned"}
-                    ]},
-                    {"id": "shares", "type": "table", "record": "share", "search": true, "perPage": 25, "columns": [
-                        {"id": "when", "label": "When", "kind": "text", "sortable": true},
-                        {"id": "item", "label": "Item", "kind": "text"},
-                        {"id": "channel", "label": "Channel", "kind": "text", "sortable": true},
-                        {"id": "status", "label": "Status", "kind": "badge", "sortable": true},
-                        {"id": "reply", "label": "Network said", "kind": "text"}
-                    ], "filters": [
-                        {"id": "status", "label": "Status", "options": {"planned": "Planned", "suggested": "Suggested", "sent": "Sent", "failed": "Failed", "held": "Held"}}
-                    ], "rowActions": ["edit", "duplicate", "enable", "disable", "delete"], "bulkActions": ["enable", "disable", "delete"]}
-                ]},
-                {"id": "channels", "label": "Channels", "blocks": [
-                    {"id": "connect", "type": "notice", "tone": "info", "text": "Add a channel, then open the address in its Sign-in column to connect it. Networks that use a token connect as soon as you save."},
-                    {"id": "list", "type": "table", "record": "channel", "search": true, "perPage": 50, "columns": [
-                        {"id": "name", "label": "Name", "kind": "text", "sortable": true},
-                        {"id": "network", "label": "Network", "kind": "text", "sortable": true},
-                        {"id": "status", "label": "Status", "kind": "badge"},
-                        {"id": "signin", "label": "Sign-in", "kind": "text"},
-                        {"id": "sent", "label": "Sent", "kind": "number"}
-                    ], "rowActions": ["edit", "duplicate", "enable", "disable", "delete"], "bulkActions": ["enable", "disable", "delete"]}
-                ]},
-                {"id": "automations", "label": "Automations", "blocks": [
-                    {"id": "list", "type": "table", "record": "automation", "search": true, "perPage": 50, "columns": [
-                        {"id": "name", "label": "Name", "kind": "text", "sortable": true},
-                        {"id": "kind", "label": "Does", "kind": "text"},
-                        {"id": "status", "label": "Status", "kind": "badge"},
-                        {"id": "next", "label": "Next", "kind": "text"},
-                        {"id": "sent", "label": "Sent", "kind": "number"}
-                    ], "rowActions": ["edit", "duplicate", "enable", "disable", "delete"], "bulkActions": ["enable", "disable", "delete"]}
-                ]},
-                {"id": "reports", "label": "Reports", "blocks": [
-                    {"id": "by-channel", "type": "chart", "label": "Shares by channel, last 90 days", "kind": "bar", "series": [
-                        {"id": "sent", "label": "Sent"},
-                        {"id": "failed", "label": "Failed"}
-                    ]},
-                    {"id": "by-item", "type": "chart", "label": "Most shared items, last 90 days", "kind": "bar", "series": [
-                        {"id": "sent", "label": "Sent"}
-                    ]}
-                ]}
-            ],
-            "records": [
-                {"id": "channel", "label": "Channel", "plural": "Channels", "titleField": "name", "sections": [
-                    {"id": "channel", "label": "Channel", "fields": [
-                        {"key": "name", "type": "text", "label": "Name", "description": "What you call this channel in Pollen, such as “Garden club page”.", "required": true, "maxLength": 80},
-                        {"key": "network", "type": "select", "label": "Network", "required": true, "options": {"facebook": "Facebook Page", "instagram": "Instagram (business)", "x": "X", "linkedin": "LinkedIn profile", "linkedin-page": "LinkedIn page", "pinterest": "Pinterest board", "telegram": "Telegram channel or group", "bluesky": "Bluesky", "threads": "Threads", "mastodon": "Mastodon", "reddit": "Reddit", "discord": "Discord", "google-business": "Google Business Profile", "tumblr": "Tumblr", "vk": "VK", "plurk": "Plurk", "blogger": "Blogger", "wordpress": "Another WordPress site"}},
-                        {"key": "account", "type": "text", "label": "Account", "description": "Which page, board, chat, subreddit, location or blog to post to. Leave it empty to choose after connecting, when the account has more than one.", "maxLength": 200},
-                        {"key": "labels", "type": "text", "label": "Labels", "description": "Words that group channels, separated by commas, such as “news, weekend”. A writer can name a label to share to every channel with it.", "maxLength": 200},
-                        {"key": "auto_types", "type": "types", "label": "Share new items of these types", "description": "Share each newly published item of these types here. Leave empty to share only by hand and by automations."}
-                    ]},
-                    {"id": "signin", "label": "Sign-in", "fields": [
-                        {"key": "server", "type": "url", "label": "Server", "description": "For Mastodon, a WordPress site, or a Bluesky server other than bsky.social: its address, which must also be listed under Servers in Settings › Pollen."},
-                        {"key": "handle", "type": "text", "label": "Handle or user name", "description": "Bluesky: your handle, such as name.bsky.social. WordPress: the user name the application password belongs to.", "maxLength": 200},
-                        {"key": "token", "type": "text", "label": "Token", "description": "Telegram: the bot token. Bluesky and WordPress: an app password. Mastodon and VK: an access token. Discord: the webhook address. Pollen seals it and never shows it again; leave it empty to keep the saved one.", "maxLength": 2000}
-                    ]},
-                    {"id": "writing", "label": "Writing", "fields": [
-                        {"key": "template", "type": "textarea", "label": "Text", "description": "This channel's own template. Empty uses the network's text, or Pollen's.", "maxLength": 2000},
-                        {"key": "first_comment", "type": "textarea", "label": "First comment", "description": "Posted under each share where the network allows it.", "maxLength": 1000},
-                        {"key": "link", "type": "select", "label": "The link", "default": "card", "options": {"card": "As a link preview, where the network makes one", "text": "In the text", "comment": "In the first comment", "none": "Leave it out"}},
-                        {"key": "image", "type": "select", "label": "Image", "default": "default", "options": {"default": "As Settings › Pollen says", "none": "Never"}},
-                        {"key": "extra", "type": "text", "label": "Network option", "description": "Reddit: the flair ID. Mastodon: unlisted or private to post there instead of publicly. Telegram: silent to send without a sound. Blogger and WordPress: draft to save as a draft.", "maxLength": 100}
-                    ]},
-                    {"id": "people", "label": "Who may post here", "fields": [
-                        {"key": "access", "type": "select", "label": "Who", "default": "sharers", "options": {"sharers": "Everyone who may share with Pollen", "managers": "Only people who manage Pollen", "listed": "Only the people named below, and managers"}},
-                        {"key": "people", "type": "text", "label": "People", "description": "Display names or account numbers, separated by commas.", "maxLength": 500, "visibleWhen": {"access": "listed"}}
-                    ]}
-                ]},
-                {"id": "share", "label": "Share", "plural": "Shares", "titleField": "item", "sections": [
-                    {"id": "what", "label": "What to share", "fields": [
-                        {"key": "item", "type": "text", "label": "Item", "description": "A published item's address or ID. Leave it empty to post your own message, such as an announcement.", "maxLength": 500},
-                        {"key": "message", "type": "textarea", "label": "Text", "description": "Empty uses the template for each channel.", "maxLength": 5000},
-                        {"key": "image", "type": "url", "label": "Image address", "description": "An image to post with it, from where your images are served."},
-                        {"key": "first_comment", "type": "textarea", "label": "First comment", "maxLength": 1000}
-                    ]},
-                    {"id": "where", "label": "Where and when", "fields": [
-                        {"key": "channels", "type": "text", "label": "Channels", "description": "Channel names or labels, separated by commas; empty for every channel you may use. Saving plans one share for each.", "maxLength": 500},
-                        {"key": "send_at", "type": "datetime", "label": "When", "description": "Empty sends it in the next minute."}
-                    ]}
-                ]},
-                {"id": "automation", "label": "Automation", "plural": "Automations", "titleField": "name", "sections": [
-                    {"id": "what", "label": "What it does", "fields": [
-                        {"key": "name", "type": "text", "label": "Name", "required": true, "maxLength": 80},
-                        {"key": "kind", "type": "select", "label": "When it shares", "required": true, "default": "publish", "options": {"publish": "When a matching item is published", "reshare": "Again and again, from older items"}},
-                        {"key": "channels", "type": "text", "label": "Channels", "description": "Channel names or labels, separated by commas.", "required": true, "maxLength": 500},
-                        {"key": "template", "type": "textarea", "label": "Text", "description": "Empty uses each channel's own.", "maxLength": 2000},
-                        {"key": "ai", "type": "boolean", "label": "Let AI write each share", "description": "Ask your site's AI connection for the text, and send it without a person choosing it.", "default": false}
-                    ]},
-                    {"id": "which", "label": "Which items", "fields": [
-                        {"key": "types", "type": "types", "label": "Types", "description": "Empty means posts."},
-                        {"key": "categories", "type": "text", "label": "In these categories", "description": "Category slugs, separated by commas; empty for any.", "maxLength": 500},
-                        {"key": "tags", "type": "text", "label": "With these tags", "description": "Tag slugs, separated by commas; empty for any.", "maxLength": 500},
-                        {"key": "exclude_terms", "type": "text", "label": "Never in these", "description": "Category or tag slugs, separated by commas.", "maxLength": 500},
-                        {"key": "exclude_items", "type": "textarea", "label": "Never these items", "description": "Item IDs or addresses, one a line.", "maxLength": 5000},
-                        {"key": "older_than", "type": "number", "label": "Older than", "description": "Days since first published; 0 for no limit.", "default": 30, "min": 0, "max": 36500, "visibleWhen": {"kind": "reshare"}},
-                        {"key": "newer_than", "type": "number", "label": "Newer than", "description": "Days since first published; 0 for no limit.", "default": 0, "min": 0, "max": 36500, "visibleWhen": {"kind": "reshare"}}
-                    ]},
-                    {"id": "when", "label": "When", "fields": [
-                        {"key": "delay", "type": "number", "label": "Wait after publishing", "default": 0, "min": 0, "max": 10080, "visibleWhen": {"kind": "publish"}},
-                        {"key": "every", "type": "select", "label": "Share every", "default": "240", "options": {"30": "30 minutes", "60": "Hour", "120": "2 hours", "180": "3 hours", "240": "4 hours", "360": "6 hours", "480": "8 hours", "720": "12 hours", "1440": "Day", "2880": "2 days", "10080": "Week"}, "visibleWhen": {"kind": "reshare"}},
-                        {"key": "days", "type": "multiselect", "label": "On these days", "description": "Empty for every day.", "options": {"1": "Monday", "2": "Tuesday", "3": "Wednesday", "4": "Thursday", "5": "Friday", "6": "Saturday", "7": "Sunday"}, "visibleWhen": {"kind": "reshare"}},
-                        {"key": "from_hour", "type": "number", "label": "Not before", "description": "Hour of the day, in the site's time zone.", "default": 8, "min": 0, "max": 23, "visibleWhen": {"kind": "reshare"}},
-                        {"key": "to_hour", "type": "number", "label": "Not after", "description": "Hour of the day, in the site's time zone.", "default": 21, "min": 0, "max": 23, "visibleWhen": {"kind": "reshare"}},
-                        {"key": "per_run", "type": "number", "label": "Items each time", "default": 1, "min": 1, "max": 5, "visibleWhen": {"kind": "reshare"}},
-                        {"key": "order", "type": "select", "label": "Pick", "default": "random", "options": {"random": "At random", "oldest": "Oldest first", "least": "Least shared first"}, "visibleWhen": {"kind": "reshare"}},
-                        {"key": "repeat_after", "type": "number", "label": "Share an item again after", "description": "Days; 0 waits until every matching item has been shared.", "default": 0, "min": 0, "max": 3650, "visibleWhen": {"kind": "reshare"}},
-                        {"key": "rotate", "type": "boolean", "label": "Take turns", "description": "Send each pick to the next channel in turn, rather than to every channel.", "default": false, "visibleWhen": {"kind": "reshare"}}
-                    ]}
-                ]}
-            ]
-        }
+            {"key": "pause", "type": "boolean", "section": "sharing", "label": "Pause all sharing", "description": "While on, nothing is sent; shares wait and go when it is off again.", "default": false}
+        ]
     },
     "author": "Krafty Sprouts Media, LLC",
     "license": "GPL-2.0-or-later"

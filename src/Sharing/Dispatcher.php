@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace KraftySprouts\Pollen\Sharing;
 
-use DateTimeZone;
 use KraftySprouts\Pollen\Doors;
 use Teme\Contracts\Jobs\JobContext;
 use Teme\Contracts\Jobs\QueueOptions;
@@ -19,8 +18,7 @@ use Throwable;
 
 /**
  * Pollen's scheduled pass, each minute, as the administrator who enabled
- * Pollen: plans the shares of items newly published, takes other plugins'
- * requests, runs the re-share automations that are due, and queues a
+ * Pollen: plans the shares of items newly published, then queues a
  * send-share job for each share whose time has come.
  *
  * @since 1.0.0
@@ -41,31 +39,17 @@ final readonly class Dispatcher
     {
         $person = $context->personId();
         $planner = new Planner($this->doors);
-        $context->progress(0, 4, __('Planning new items'));
+        $context->progress(0, 2, __('Planning new items'));
 
         foreach ($this->doors->items->takeWaiting() as $item) {
             $planner->published($item, $person);
         }
 
-        $context->progress(1, 4, __('Taking requests from other plugins'));
-        $planner->requests();
+        $context->progress(1, 2, __('Sending what is due'));
+        $queued = $this->queueDue();
+        $context->progress(2, 2, trans_choice('{0} Nothing was due.|{1} Queued one share.|[2,*] Queued :count shares.', $queued, ['count' => $queued]));
 
-        $context->progress(2, 4, __('Re-sharing older items'));
-        $resharer = new Resharer($this->doors);
-
-        foreach ($this->doors->automations->due() as $automation) {
-            try {
-                // Teme tells a plugin the site's time zone only in its area, so each automation keeps the one it was saved in.
-                $zone = new DateTimeZone(is_string($automation->settings['_zone'] ?? null) && $automation->settings['_zone'] !== '' ? $automation->settings['_zone'] : 'UTC');
-                $resharer->run($automation, $person, $zone);
-            } catch (Throwable $failed) {
-                $this->doors->automations->ran($automation->id, now()->addHour(), $automation->turn, mb_substr($failed->getMessage(), 0, 200));
-            }
-        }
-
-        $context->progress(3, 4, __('Sending what is due'));
-
-        return $this->queueDue();
+        return $queued;
     }
 
     /**
