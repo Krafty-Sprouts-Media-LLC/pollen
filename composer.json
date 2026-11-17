@@ -1,0 +1,22 @@
+{
+    "name": "krafty-sprouts/pollen",
+    "description": "Pollen shares a Teme site's content to social networks: on publish, on a plan, and by re-sharing older items.",
+    "type": "teme-plugin",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Krafty Sprouts Media, LLC"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "ext-gd": "*",
+        "ext-sodium": "*",
+        "teme/contracts": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "KraftySprouts\\Pollen\\": "src/"
+        }
+    }
+}
