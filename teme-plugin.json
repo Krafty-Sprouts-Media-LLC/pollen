@@ -53,7 +53,16 @@
     ],
     "imports": {
         "importer": "KraftySprouts\\Pollen\\Import\\WordPressImport",
-        "options": ["rop_data", "rop_schedules_data", "top_opt_post_formats", "top_opt_excluded_post", "fsp_settings"]
+        "options": [
+            "rop_data", "rop_schedules_data", "top_opt_post_formats", "top_opt_excluded_post",
+            "fsp_auto_share", "fsp_auto_share_delay", "fsp_allowed_post_types",
+            "fsp_fb_post_text", "fsp_fb_first_comment_text", "fsp_instagram_post_content", "fsp_instagram_first_comment_text",
+            "fsp_twitter_post_content", "fsp_twitter_first_comment_text", "fsp_linkedin_post_content", "fsp_pinterest_post_content",
+            "fsp_telegram_post_content", "fsp_bluesky_post_content", "fsp_bluesky_first_comment_text", "fsp_threads_post_content",
+            "fsp_mastodon_post_content", "fsp_reddit_post_content", "fsp_reddit_first_comment_text", "fsp_discord_post_content",
+            "fsp_google_b_post_content", "fsp_tumblr_post_content", "fsp_vk_post_content", "fsp_plurk_post_content",
+            "fsp_blogger_post_content", "fsp_wordpress_post_content"
+        ]
     },
     "owns": {
         "tables": ["pollen_channels", "pollen_shares", "pollen_automations", "pollen_items", "pollen_images", "pollen_connects", "pollen_people", "pollen_requests"]
@@ -137,9 +146,9 @@
             {"id": "share", "label": "Pollen", "description": "Share this item to your channels, now or later.", "icon": "send", "types": ["post", "page"], "permission": "share", "actions": [
                 {"id": "share", "label": "Plan shares", "job": "panel-share", "fields": [
                     {"key": "channels", "type": "text", "label": "Channels", "maxLength": 500, "default": ""},
-                    {"key": "message", "type": "textarea", "label": "Your words (empty uses the template)", "maxLength": 2000, "default": ""},
-                    {"key": "when", "type": "text", "label": "When (such as 2026-12-01 09:30; empty for when it is published)", "maxLength": 40, "default": ""},
-                    {"key": "image", "type": "text", "label": "Image address (empty for the article's)", "maxLength": 500, "default": ""}
+                    {"key": "message", "type": "textarea", "label": "Your words (optional)", "maxLength": 2000, "default": ""},
+                    {"key": "when", "type": "text", "label": "When (such as 2026-12-01 09:30)", "maxLength": 40, "default": ""},
+                    {"key": "image", "type": "text", "label": "Image address (optional)", "maxLength": 500, "default": ""}
                 ]},
                 {"id": "captions", "label": "Suggest captions", "job": "panel-captions", "fields": [
                     {"key": "channels", "type": "text", "label": "Channels", "maxLength": 500, "default": ""},
@@ -161,7 +170,6 @@
                         {"id": "sent", "label": "Sent, last 30 days", "format": "number"},
                         {"id": "failed", "label": "Failed, last 30 days", "format": "number"},
                         {"id": "waiting", "label": "Waiting to go", "format": "number"},
-                        {"id": "channels", "label": "Channels working", "format": "number"},
                         {"id": "attention", "label": "Channels needing you", "format": "number"}
                     ]},
                     {"id": "daily", "type": "chart", "label": "Shares a day, last 30 days", "kind": "line", "series": [

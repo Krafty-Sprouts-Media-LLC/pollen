@@ -100,7 +100,7 @@ return new class extends Migration
             $table->string('source', 2048);
             $table->string('network', 32);
             $table->string('mime', 32);
-            $table->binary('bytes');
+            $table->longText('bytes');
             $table->unsignedInteger('width');
             $table->unsignedInteger('height');
             $table->timestampTz('created_at');
@@ -117,6 +117,7 @@ return new class extends Migration
         Schema::create('pollen_people', function (Blueprint $table): void {
             $table->string('person_id', 32)->primary();
             $table->jsonb('permissions')->default('[]');
+            $table->string('zone', 64)->default('');
             $table->timestampTz('seen_at');
         });
 
