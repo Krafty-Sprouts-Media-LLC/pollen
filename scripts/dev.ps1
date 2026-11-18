@@ -13,7 +13,6 @@ $env:DB_DATABASE = 'pollen_dev'
 $env:TEME_VERSION = '1.0.0'
 $env:TEME_PLUGIN_PATHS = $pollen
 $env:APP_URL = 'http://127.0.0.1:8199'
-$env:QUEUE_CONNECTION = 'sync'
 
 Push-Location $site
 try {

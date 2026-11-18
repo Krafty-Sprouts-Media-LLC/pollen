@@ -122,6 +122,12 @@ Moving Pollen onto it would replace `pollen_channels.sealed`, `pollen_connects`,
 8. **The development site's `.env` names `TEME_VERSION=0.8.0-alpha.1`** while its contracts are at 1.0.0, so every plugin requiring `^1.0` is refused there. Pollen's test script sets `TEME_VERSION=1.0.0` for its own process; teme-dev was not changed.
 9. **Plugins' words.** The rules say a plugin's `lang/<locale>.json` adds sentences. The code standards say "Teme loads the active theme's own lang folder, but not a plugin's, so a plugin's words show in English." These disagree; Pollen writes every word through `__()` in American English and ships `lang/` for translators.
 
+## Trying it on a development site
+
+1. **A plugin's job queued from `teme:plugins:run-due-schedules` on the `sync` queue is cancelled at once** ("Cancelled by …"), because plugins don't start in that command, and `sync` runs the job inside it. With the site's database queue and `queue:work`, the same run finishes. The handbook's development-site guide says to run a worker; it could say that the `sync` queue won't run plugin schedules from the console.
+2. **The editor's address for an item is `/admin/content/{id}/edit`**, not under the type's list (`/admin/posts/{id}`); the handbook doesn't name it, which a plugin needs for links in notices and README steps.
+3. **Teme's editor has an excerpt box and a featured image picker**, so the item has both; neither reaches plugins (W3).
+
 ## Testing kit
 
 1. **A plugin's classes load only after `plugin()`**, so a test that uses Pollen's classes before enabling needs the package's own autoloader (`tests/bootstrap.php`).
