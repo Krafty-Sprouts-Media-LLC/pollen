@@ -73,6 +73,7 @@ return new class extends Migration
             $table->boolean('opted_out')->default(false);
             $table->timestampTz('published_at')->nullable();
             $table->string('type', 64)->default('');
+            $table->string('actor_id', 32)->default('');
             $table->string('title', 512)->default('');
             $table->string('url', 2048)->default('');
             $table->boolean('gone')->default(false);

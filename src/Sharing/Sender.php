@@ -131,7 +131,7 @@ final readonly class Sender
         $itemId = $share['item_id'] ?? null;
 
         if (is_string($itemId) && $itemId !== '' && $this->doors->content !== null) {
-            $item = ItemFacts::read($this->doors->content, null, $itemId, $personId);
+            $item = ItemFacts::read($this->doors->content, $this->doors->peopleReader, $itemId, $personId, $this->doors->items->actor($itemId));
 
             if ($item->status !== 'published' || $item->url === '') {
                 throw ShareFailed::final(__('The item isn’t published, so there is nothing to share.'));

@@ -24,6 +24,7 @@ use Teme\Contracts\Http\OutboundHttp;
 use Teme\Contracts\Jobs\JobContext;
 use Teme\Contracts\Jobs\Jobs;
 use Teme\Contracts\Jobs\PluginHasJobs;
+use Teme\Contracts\People\PeopleReader;
 use Teme\Contracts\Plugins\Plugin;
 use Teme\Contracts\Settings\SecretReader;
 use Teme\Contracts\Settings\SettingsReader;
@@ -50,15 +51,16 @@ final class Pollen implements Plugin, PluginHasJobs
         OutboundHttp $outbound,
         Jobs $jobs,
         ContentReader $content,
+        PeopleReader $people,
     ) {
-        $this->doors = new Doors(new Settings($settings, $secrets), $site, $outbound, $jobs, $content);
+        $this->doors = new Doors(new Settings($settings, $secrets), $site, $outbound, $jobs, $content, $people);
     }
 
     public function register(Hooks $hooks): void
     {
         $hooks->on(ContentPublished::class, function (ContentPublished $published): void {
             $item = $published->item;
-            $this->doors->items->published($item->id, $item->type, $item->title, (string) $item->url, $published->publishedAt, $published->first);
+            $this->doors->items->published($item->id, $item->type, $item->title, (string) $item->url, $published->publishedAt, $published->first, $published->actorId);
         });
 
         $hooks->on(ContentUnpublished::class, fn (ContentUnpublished $event) => $this->gone($event->item->id));

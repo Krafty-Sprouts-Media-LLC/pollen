@@ -46,7 +46,7 @@ final readonly class Planner
         }
 
         try {
-            $facts = ItemFacts::read($this->doors->content, null, $itemId, $personId);
+            $facts = ItemFacts::read($this->doors->content, $this->doors->peopleReader, $itemId, $personId, $this->doors->items->actor($itemId));
         } catch (ReadRefused) {
             return 0;
         }

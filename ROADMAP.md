@@ -9,7 +9,7 @@ Code written ahead of time for later versions is kept, untested, on the `parked/
 | # | Step | State |
 |---|---|---|
 | 1 | Post on publish to one Telegram channel: queued jobs, retries, failed and held states | done: 21 tests pass; tried on teme-dev (below) |
-| 2 | Templates: Pollen's text, per network, per channel; variables; length fitted; link handling; UTM tags | to do |
+| 2 | Templates: Pollen's text, per network, per channel; variables; length fitted; link handling; UTM tags | done: 8 new tests, 29 in all; tried on teme-dev (below) |
 | 3 | Channels connected with a typed token: Mastodon, Telegram, Bluesky; checked when saved | to do |
 | 4 | Pollen's area: channels (add, edit, switch off), the planner and log, overview figures | to do |
 | 5 | Sign-in with the owner's app (OAuth): the connect and callback addresses, renewal | to do |
@@ -30,6 +30,8 @@ Step 1, on 2026-11-17, with `scripts/dev.ps1` (teme-dev's code, its own database
 4. One Telegram channel with a made-up token was added through Pollen's own store (the channel screens are step 4).
 5. A post was written and published in Teme's editor; Pollen recorded it.
 6. `teme:plugins:run-due-schedules --plugin=pollen`, then `queue:work`, ran Pollen's pass: one share was planned for the channel, two minutes after publishing. Paused, nothing was sent.
+
+Step 2, on 2026-11-18: Pollen was disabled, its tables dropped (`teme:plugins:remove-data`) and enabled again with consent through the console, as the new capability (reading writers' names) and the new column needed. Enabling listed the new line ("See the names of the people who write on this site"); Teme's settings form for Pollen now has ten fields, including "Text for each network" (a repeater). Not done on the trial site: seeing the share's text (sharing stays paused there, so no text is written) and a second publish through the editor, because the browser pane wouldn't hold a sign-in this time. The text itself is covered by the 8 tests, which read what Telegram was sent.
 
 **1.0.0 is usable when** steps 1 to 5 and 11 are done: a site owner can connect token channels and their own-app channels and have new items shared, see what was sent, and re-send a failure. Steps 6 to 10 complete the release.
 

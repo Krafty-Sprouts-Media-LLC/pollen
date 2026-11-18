@@ -9,7 +9,7 @@
         "teme": "^1.0"
     },
     "plugin": "KraftySprouts\\Pollen\\Pollen",
-    "capabilities": ["content.read", "http", "jobs"],
+    "capabilities": ["content.read", "people.read", "http", "jobs"],
     "hooks": ["ContentPublished", "ContentUnpublished", "ContentTrashed", "ContentDeleted"],
     "hosts": ["api.telegram.org"],
     "jobs": [
@@ -30,6 +30,10 @@
         "settings": [
             {"key": "lock_key", "type": "secret", "section": "start", "label": "Lock key", "description": "A long phrase, at least 24 characters, that seals channel sign-ins. Changing it later means connecting every channel again."},
             {"key": "template", "type": "textarea", "section": "sharing", "label": "Share text", "description": "What a share says. Use {title}, {excerpt}, {content}, {link}, {author}, {hashtags}, {categories}, {tags}, {site} and {type}.", "default": "{title}\n\n{excerpt}\n\n{link}\n\n{hashtags}", "maxLength": 2000},
+            {"key": "templates", "type": "repeater", "section": "sharing", "label": "Text for each network", "description": "Write differently for a network. A network not listed uses the share text above. A channel's own text comes before both.", "itemLabel": "network", "itemTitle": "network", "maxItems": 20, "fields": [
+                {"key": "network", "type": "select", "label": "Network", "description": "The network this text is for.", "required": true, "options": {"telegram": "Telegram"}},
+                {"key": "text", "type": "textarea", "label": "Text", "description": "The template for this network.", "maxLength": 2000}
+            ]},
             {"key": "hashtags", "type": "number", "section": "sharing", "label": "Most hashtags", "description": "How many of an item's categories and tags become hashtags.", "default": 3, "min": 0, "max": 30},
             {"key": "delay", "type": "number", "section": "sharing", "label": "Wait after publishing", "description": "Minutes Pollen waits after an item is published before sharing it, so a quick fix makes it in.", "default": 2, "min": 0, "max": 60, "unit": "minutes"},
             {"key": "utm", "type": "boolean", "section": "sharing", "label": "Tag shared links", "description": "Add utm_source, utm_medium and utm_campaign to each shared link, so your own statistics can tell where readers came from.", "default": true},

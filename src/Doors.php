@@ -19,6 +19,7 @@ use KraftySprouts\Pollen\Store\Shares;
 use Teme\Contracts\Content\ContentReader;
 use Teme\Contracts\Http\OutboundHttp;
 use Teme\Contracts\Jobs\Jobs;
+use Teme\Contracts\People\PeopleReader;
 use Teme\Contracts\Site\SiteInfo;
 
 /**
@@ -49,6 +50,7 @@ final class Doors
         OutboundHttp $outbound,
         public readonly ?Jobs $jobs = null,
         public readonly ?ContentReader $content = null,
+        public readonly ?PeopleReader $peopleReader = null,
     ) {
         $this->http = new Http($outbound);
         $this->networks = new Catalog($this->http);

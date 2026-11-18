@@ -30,10 +30,14 @@ final class Items
      *
      * @since 1.0.0
      */
-    public function published(string $itemId, string $type, string $title, string $url, DateTimeInterface $firstPublished, bool $first): bool
+    public function published(string $itemId, string $type, string $title, string $url, DateTimeInterface $firstPublished, bool $first, ?string $actorId = null): bool
     {
         $exists = DB::table(self::TABLE)->where('item_id', $itemId)->exists();
         $values = ['type' => $type, 'title' => mb_substr($title, 0, 512), 'url' => mb_substr($url, 0, 2048), 'gone' => false, 'updated_at' => now()];
+
+        if ($actorId !== null && $actorId !== '') {
+            $values['actor_id'] = $actorId;
+        }
 
         if ($exists) {
             DB::table(self::TABLE)->where('item_id', $itemId)->update($values + ($first ? ['panel_note' => 'plan'] : []));
@@ -66,6 +70,16 @@ final class Items
         }
 
         return array_values($rows);
+    }
+
+    /**
+     * Returns who last published the item, which stands in for its owner when it credits nobody; empty when unknown.
+     *
+     * @since 1.0.0
+     */
+    public function actor(string $itemId): string
+    {
+        return (string) DB::table(self::TABLE)->where('item_id', $itemId)->value('actor_id');
     }
 
     /**

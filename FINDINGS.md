@@ -41,6 +41,10 @@ Moving Pollen onto it would replace `pollen_channels.sealed`, `pollen_connects`,
 
 **Instead.** Pollen uses, in order: an image address the writer gives (editor panel or planner), then the first image node in the article's document that carries an absolute `src`. An `excerpt`, `summary` or `description` field is used when the type has one; otherwise Pollen cuts the article's text. Settings say so in words.
 
+### W3b. An item's owner isn't readable
+
+`ItemSnapshot::$credits` is empty "when it credits its owner", and nothing hands a plugin the owner. A share's `{author}` would be empty for most items. Pollen records the person `ContentPublished::$actorId` names (who published) and uses them when there are no credits. That is wrong when an editor publishes an author's post, and empty for items published by schedule with no person. Expected: `ItemSnapshot::$ownerId`, or credits always filled.
+
 ### W4. No site time zone outside the admin area
 
 **Expected.** `SiteInfo` to give the site's time zone, for "share at 09:30" and "not before 8 o'clock".

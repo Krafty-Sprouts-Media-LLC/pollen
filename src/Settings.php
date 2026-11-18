@@ -86,9 +86,16 @@ final readonly class Settings
      */
     public function networkText(string $network): array
     {
-        $text = $this->string('template');
+        $text = trim($this->string('template')) !== '' ? $this->string('template') : Template::DEFAULT;
+        $rows = $this->settings->get(self::GROUP, 'templates');
 
-        return ['text' => trim($text) !== '' ? $text : Template::DEFAULT, 'first_comment' => '', 'hashtags' => $this->int('hashtags')];
+        foreach (is_array($rows) ? $rows : [] as $row) {
+            if (is_array($row) && ($row['network'] ?? null) === $network && is_string($row['text'] ?? null) && trim($row['text']) !== '') {
+                $text = $row['text'];
+            }
+        }
+
+        return ['text' => $text, 'first_comment' => '', 'hashtags' => $this->int('hashtags')];
     }
 
     /**
