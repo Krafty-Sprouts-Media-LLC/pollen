@@ -48,20 +48,23 @@ it('marks a channel to connect again when the network refuses its token', functi
         ->and(channelRow($id)['last_error'])->toBe('Unauthorized');
 });
 
-it('sends the shares a channel held once it connects', function (): void {
+it('sends the shares a channel held once it connects again', function (): void {
     $plugin = pollen($this);
-    $this->outbound()->answer('api.telegram.org', 200, ['ok' => true, 'result' => ['id' => -1001, 'title' => 'Garden club', 'message_id' => 9]]);
-    $id = channel('telegram', 'Garden', ['token' => CHECK_BOT], ['account' => '-1001', 'status' => 'reconnect']);
+    $outbound = $this->outbound()->answer('api.telegram.org', 401, ['ok' => false, 'description' => 'Unauthorized']);
+    $id = channel('telegram', 'Garden', ['token' => CHECK_BOT], ['account' => '-1001']);
 
     $this->publish('Waiting for sign-in');
     $plugin->runJob('dispatch');
-    expect(shares()[0]['status'])->toBe('held');
+    expect(shares()[0]['status'])->toBe('held')->and(channelRow($id)['status'])->toBe('reconnect');
 
+    $outbound->answer('api.telegram.org', 200, ['ok' => true, 'result' => ['id' => -1001, 'title' => 'Garden club', 'message_id' => 9]]);
     $plugin->runJob('check-channel', ['channel' => $id]);
+
+    expect(channelRow($id)['status'])->toBe('connected')->and(shares()[0]['status'])->toBe('planned');
+
     $plugin->runJob('dispatch');
 
-    expect(channelRow($id)['status'])->toBe('connected')
-        ->and(shares()[0]['status'])->toBe('sent');
+    expect(shares()[0]['status'])->toBe('sent');
 });
 
 it('leaves a channel as it was when the network can’t be reached, for the job to try again', function (): void {

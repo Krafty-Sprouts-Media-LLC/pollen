@@ -66,7 +66,8 @@ final readonly class ItemFacts
     {
         $field = $snapshot->fields['excerpt'] ?? $snapshot->fields['summary'] ?? $snapshot->fields['description'] ?? null;
         $excerpt = is_string($field) && trim($field) !== '' ? TiptapText::cut(trim($field), 300) : TiptapText::excerpt($snapshot->body, 300);
-        $authorIds = $snapshot->credits !== [] ? $snapshot->credits : array_filter([$fallbackAuthorId]);
+        // The item's own author is its first credited person; with no credits Teme means its owner, which a plugin can't read.
+        $authorIds = $snapshot->credits !== [] ? [$snapshot->credits[0]] : array_filter([$fallbackAuthorId]);
 
         return new self(
             id: $snapshot->item->id,

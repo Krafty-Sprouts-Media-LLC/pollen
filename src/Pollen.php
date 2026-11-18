@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace KraftySprouts\Pollen;
 
+use KraftySprouts\Pollen\Channels\Connector;
 use KraftySprouts\Pollen\Jobs\Handler;
 use KraftySprouts\Pollen\Sharing\Dispatcher;
 use KraftySprouts\Pollen\Sharing\Sender;
@@ -72,6 +73,7 @@ final class Pollen implements Plugin, PluginHasJobs
     {
         return [
             'dispatch' => new Handler(fn (JobContext $c) => (new Dispatcher($this->doors))->run($c)),
+            'check-channel' => new Handler(fn (JobContext $c) => (new Connector($this->doors))->check((string) ($c->payload()['channel'] ?? ''))),
             'send-share' => new Handler(fn (JobContext $c) => (new Sender($this->doors))->send((string) ($c->payload()['share'] ?? ''), $c->personId(), $c->attempt())),
         ];
     }

@@ -14,7 +14,8 @@
     "hosts": ["api.telegram.org"],
     "jobs": [
         {"key": "dispatch", "label": "Pollen: send what is due", "tries": 1},
-        {"key": "send-share", "label": "Pollen: share to a network", "tries": 3, "backoff": [60, 300, 900]}
+        {"key": "send-share", "label": "Pollen: share to a network", "tries": 3, "backoff": [60, 300, 900]},
+        {"key": "check-channel", "label": "Pollen: check a channel's sign-in", "tries": 3, "backoff": [30, 120, 600]}
     ],
     "schedules": [
         {"job": "dispatch", "every": "minute"}
