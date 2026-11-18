@@ -4,7 +4,15 @@ Each decision Pollen's build made alone, and why.
 
 ## D1. What 1.0.0 is, and what waits for later versions
 
-The owner asked to build one feature at a time and to leave some things for future versions. Pollen 1.0.0 is the smallest release that does the job well: share an item when it is published, and re-share older ones, to the networks of the first group.
+The owner asked to build one feature at a time and to leave some things for future versions. A first scope I wrote went beyond the brief; on the maintainers' architect's word, confirmed by the owner, it was cut to this.
+
+**Pollen 1.0.0 is only:** channels for Facebook Pages, X, LinkedIn and Telegram; posting on publish with a template per network; the editor panel to choose channels and edit the text; the log with re-send; and notices when a channel needs connecting again. ROADMAP.md has the eight steps in order.
+
+**Moved out of 1.0.0:** Mastodon, Bluesky, Instagram, Threads, Pinterest (later, a group at a time); re-sharing older items (1.1); the planner and composer (1.2); AI captions, images, the hooks for other plugins and reports (1.3); the WordPress import. The code written early for these stays on `parked/all-at-once`, untested.
+
+The older table below is superseded; it is kept so the reasons still read.
+
+**First scope (superseded):** the paragraphs and table that follow described re-sharing and more networks in 1.0.0.
 
 **In 1.0.0**, each built in this order, each with a failing test first:
 
