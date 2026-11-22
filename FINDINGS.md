@@ -2,6 +2,31 @@
 
 What building Pollen against Teme 1.0.0's public handbook, contracts and testing kit taught us: where the handbook was missing, wrong or unclear, and each **wall**, a socket a plugin like Pollen needs and Teme doesn't offer yet. Each says what we expected and what Pollen does instead. Nothing here was worked around by changing Teme.
 
+## Filed on Teme
+
+Teme's own issue list is `github.com/temecms/teme`. Every wall and most handbook and testing-kit gaps below were already filed there by other plugin builds; those were searched first and are linked, not duplicated. Filed on 2026-11-22, three new issues and two comments:
+
+| Wall or gap | Teme issue |
+|---|---|
+| W1. Connected accounts shared by plugins | #455 (added a comment: what a plugin needs to move onto it) |
+| W2. A secret a plugin receives at run time | #464 |
+| W3. Featured image and excerpt for plugins | #461 |
+| W3b. The item's owner | #462 |
+| W4 and W8. Site time zone outside the area; three records, four figures, no calendar block | #477 |
+| W5. Files through the outbound door | #478 |
+| W6. Link cells and custom row actions in an area | #465 |
+| W7. Fields that offer a plugin's own choices, terms by slug, an item picker | #466 |
+| W9. Editor panels: read-only rows and previews | #470 |
+| Handbook gaps (static hook methods, area limits, panel payload key, badge tones, header shape, notice route parameter, the sync queue and run-due-schedules) | #479 and #368 |
+| Testing kit: the outbound fake answers one body per host | #366 (added a comment: answer by path) |
+| Testing kit: can't agree to a host typed into a setting | #682 (new) |
+| Testing kit: can't drive an area, an editor panel or a status check | #683 (new) |
+| Testing kit: `runJob()` attempt number; classes load only after `plugin()` | #684 (new) |
+| W10. No way for one plugin to call another | not filed: hooks that collect answers cover it (`pollen:ShareRequests`), so it isn't blocking |
+| W11. Jobs delayed past an hour; a scheduled publication's person | **not filed yet** (not in #477 or #479) |
+| W12. A job knows only who it runs for, not their role | #477 |
+| W13. The import socket for a sharing plugin | partly in #479 (import.md items); the rest not filed |
+
 ## Walls
 
 ### W1. A shared "connected accounts" socket
@@ -118,7 +143,7 @@ Moving Pollen onto it would replace `pollen_channels.sealed`, `pollen_connects`,
 
 1. **The area's blocks and records are described only in prose.** The schema stops at `pages: [object]`; the exact keys of a figures item, a chart series, a table's columns and filters, and a record's sections had to be guessed and corrected by enabling. Two limits surfaced only as refusals: a figures block holds 1 to 4 figures, and a panel field's label is 1 to 40 characters.
 2. **`Collect::itemType()` and `Transform::valueType()` are static**, which the contracts reference doesn't show; PHP stops at a fatal error instead of the plugin being refused with a sentence.
-3. **The manifest reference says a route's handler is "built with no constructor arguments"**; the public-routes guide says it is built with the doors its constructor asks for. The guide is right: Pollen's handlers ask for settings, secrets, the site and the outbound door.
+3. **The manifest reference says a route's handler is "built with no constructor arguments"**; the public-routes guide says it is built with the doors its constructor asks for. Which is right at run time is **not verified**: Pollen's handlers on the parked branch asked for settings, secrets, the site and the outbound door and Teme's enable-time check accepted them, but no test or trial has called a route yet. Already raised in temecms/teme#368, which says handlers get no constructor arguments.
 4. **A panel action's payload** is documented only for `itemId`. Pollen reads the form's values from `values`, `fields` or the payload itself.
 5. **A badge's tones** (`ok`, `neutral`, `info`, `warn`, `danger`) appear only in `Cell::TONES`.
 6. **`HttpAnswer::$headers`** has no documented shape (list of values or one string); Pollen accepts both.
