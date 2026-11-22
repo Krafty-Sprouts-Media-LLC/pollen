@@ -4,7 +4,7 @@ What building Pollen against Teme 1.0.0's public handbook, contracts and testing
 
 ## Filed on Teme
 
-Teme's own issue list is `github.com/temecms/teme`. Every wall and most handbook and testing-kit gaps below were already filed there by other plugin builds; those were searched first and are linked, not duplicated. Filed on 2026-11-22, three new issues and two comments:
+Teme's own issue list is `github.com/temecms/teme`. Every wall and most handbook and testing-kit gaps below were already filed there by other plugin builds; those were searched first and are linked, not duplicated. Filed on 2026-11-22: four new issues (#682, #683, #684, #687) and three comments (#455, #366, #467):
 
 | Wall or gap | Teme issue |
 |---|---|
@@ -22,10 +22,10 @@ Teme's own issue list is `github.com/temecms/teme`. Every wall and most handbook
 | Testing kit: can't agree to a host typed into a setting | #682 (new) |
 | Testing kit: can't drive an area, an editor panel or a status check | #683 (new) |
 | Testing kit: `runJob()` attempt number; classes load only after `plugin()` | #684 (new) |
-| W10. No way for one plugin to call another | not filed: hooks that collect answers cover it (`pollen:ShareRequests`), so it isn't blocking |
-| W11. Jobs delayed past an hour; a scheduled publication's person | **not filed yet** (not in #477 or #479) |
+| W10. No way for one plugin to call another | #687 (new); until then Pollen's `ShareRequests` hook polls each minute |
+| W11. Jobs delayed past an hour; a scheduled publication's person | #467 (added a comment: a listener can't read the item without a person either) |
 | W12. A job knows only who it runs for, not their role | #477 |
-| W13. The import socket for a sharing plugin | partly in #479 (import.md items); the rest not filed |
+| W13. The import socket for a sharing plugin | #463 (and the import.md items in #479) |
 
 ## Walls
 
