@@ -2,6 +2,8 @@
 
 What Pollen does in each version, and what is still to do. Each step of 1.0.0 is done when its test was seen to fail, then passes, it is tried on teme-dev, and it is committed and pushed. Nothing from a later version starts before 1.0.0 is usable.
 
+**Where we stopped (2026-11-22):** steps 1 to 3 are done and pushed; step 4, Pollen's area, is next. [REPORT.md](REPORT.md) says exactly how to carry on.
+
 Code written ahead of time for later versions is kept, untested, on the `parked/all-at-once` branch. It comes back one piece at a time, each with its own failing test.
 
 ## 1.0.0: usable sharing

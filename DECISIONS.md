@@ -57,3 +57,11 @@ A publication is only recorded when Teme announces it; Pollen's minute schedule,
 ## D6. Tests run on their own database
 
 Tests run from teme-dev on `pollen_test`, with `TEME_VERSION=1.0.0` set for the test process only (`scripts/test.ps1`), because teme-dev's `.env` names 0.8.0-alpha.1 (FINDINGS, handbook 8). teme-dev's code and `.env` are unchanged so far.
+
+## D7. Step 1 was tested after its code, not before
+
+The first all-at-once build wrote step 1's code before its tests. When the build was cut back to one feature at a time, step 1's code was brought back from that work and its 12 tests were written against it and run, rather than seen to fail first. Steps 2 and 3 followed the rule: their new tests were run and seen to fail for the expected reason before the code was written. Where a test in a later step passed at once because earlier code already did the job (for example the link and UTM checks in step 2), it is a regression test, not a new feature.
+
+## D8. Where Pollen lives, and how its scripts find the development site
+
+Pollen's folder was built beside the development site, in `Downloads/Projects/teme-plugins`. On 2026-11-22 the owner asked for it to move to `Herd/balafama/workshop/plugins/pollen`. The scripts no longer assume the two sit side by side: they read the development site's path from the `POLLEN_TEME_SITE` environment variable, falling back to `C:\Users\kings\Downloads\Projects\teme-plugins\teme-dev`. Pollen was not added to the Herd site's plugin paths: nothing asked for that, and only one session at a time should change a site.

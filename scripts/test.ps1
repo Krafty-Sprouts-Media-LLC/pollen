@@ -1,9 +1,13 @@
-# Runs Pollen's tests from the development site beside this folder, on Pollen's own test database.
-# Usage: powershell -NoProfile -File scripts/test.ps1 [-Filter name] [-Path tests/Unit]
+# Runs Pollen's tests from the development site, on Pollen's own test database (pollen_test).
+#
+#   powershell -NoProfile -File scripts/test.ps1 [-Filter name] [-Path tests/Unit]
+#
+# The development site is found in the POLLEN_TEME_SITE environment variable, or at
+# C:\Users\kings\Downloads\Projects\teme-plugins\teme-dev when that is not set.
 param(
     [string]$Filter = '',
     [string]$Path = 'tests',
-    [string]$Site = (Join-Path $PSScriptRoot '..\..\teme-dev')
+    [string]$Site = $(if ($env:POLLEN_TEME_SITE) { $env:POLLEN_TEME_SITE } else { 'C:\Users\kings\Downloads\Projects\teme-plugins\teme-dev' })
 )
 
 $env:DB_DATABASE = 'pollen_test'

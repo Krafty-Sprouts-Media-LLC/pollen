@@ -1,12 +1,15 @@
-# Runs an artisan command, or serves the site, from the development site beside this folder,
-# on Pollen's own database (pollen_dev), with Pollen's folder as the only plugin path and
-# Teme reporting 1.0.0. Nothing in the development site's .env is changed.
+# Runs an artisan command, or serves the site, from the development site, on Pollen's own
+# database (pollen_dev), with Pollen's folder as the only plugin path and Teme reporting
+# 1.0.0. Nothing in the development site's .env is changed.
 #
 #   powershell -NoProfile -File scripts/dev.ps1 migrate --force
 #   powershell -NoProfile -File scripts/dev.ps1 serve
+#
+# The development site is found in the POLLEN_TEME_SITE environment variable, or at
+# C:\Users\kings\Downloads\Projects\teme-plugins\teme-dev when that is not set.
 param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Command)
 
-$site = Resolve-Path (Join-Path $PSScriptRoot '..\..\teme-dev')
+$site = if ($env:POLLEN_TEME_SITE) { $env:POLLEN_TEME_SITE } else { 'C:\Users\kings\Downloads\Projects\teme-plugins\teme-dev' }
 $pollen = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path -replace '\\', '/'
 
 $env:DB_DATABASE = 'pollen_dev'
